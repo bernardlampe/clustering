@@ -30,8 +30,8 @@ void cluster(const Params_t &params, const Matrix<S> &pts, Vec<u8> &labels, Matr
 #include "em.h"
 #include "meanshift.h"
 #include "ncuts.h"
-/*#include "fuzzy.h"
-#include "spectral.h"*/
+#include "spectral.h"
+#include "fuzzy.h"
 
 // one point per row of Matrix pts, supports up to 255 clusters
 template <typename S = float, typename T = float>
@@ -82,10 +82,16 @@ void cluster(Params_t &params, const Matrix<S> &pts, Vec<u8> &labels, Matrix<T> 
     ncuts(pts, std::stoi(params["nclusters"]), labels, clusters);
   }
   else if (algo == "spectral") {
-    //spectral(pts, labels, clusters);
+    if (params.find("nclusters") == params.end())
+      throw(Exception("spectral requires --nclusters <int>"));
+
+    spectral(pts, std::stoi(params["nclusters"]), labels, clusters);
   }
   else if (algo == "fuzzy") {
-    //fuzzy(pts, labels, clusters);
+    if (params.find("nclusters") == params.end())
+      throw(Exception("fuzzy requires --nclusters <int>"));
+
+    fuzzy(pts, std::stoi(params["nclusters"]), labels, clusters);
   }
   else {
     throw(Exception("unknown clustering algorithm"));

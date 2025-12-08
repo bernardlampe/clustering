@@ -6,17 +6,6 @@
 #include <limits>
 #include <random>
 
-// Gaussian similarity function
-template <typename S>
-double similarity(const Matrix<S>& pts, u32 i, u32 j, double sigma = 1.0) {
-    double dist2 = 0.0;
-    for (u32 d = 0; d < pts.cols(); ++d) {
-        double diff = static_cast<double>(pts.get(i, d)) - static_cast<double>(pts.get(j, d));
-        dist2 += diff * diff;
-    }
-    return std::exp(-dist2 / (2 * sigma * sigma));
-}
-
 // Normalized Cuts clustering
 template <typename S, typename T>
 void ncuts(const Matrix<S> &pts, const u32 K, Vec<u8> &labels, Matrix<T> &clusters) {

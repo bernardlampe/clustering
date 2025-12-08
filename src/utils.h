@@ -12,6 +12,17 @@
 
 #define ABS(N) ((N < 0) ? (-N) : (N))
 
+// Gaussian similarity function
+template <typename S>
+double similarity(const Matrix<S>& pts, u32 i, u32 j, double sigma = 1.0) {
+    double dist2 = 0.0;
+    for (u32 d = 0; d < pts.cols(); ++d) {
+        double diff = static_cast<double>(pts.get(i, d)) - static_cast<double>(pts.get(j, d));
+        dist2 += diff * diff;
+    }
+    return std::exp(-dist2 / (2 * sigma * sigma));
+}
+
 Params_t parse_args(int argc, char **argv) {
   Params_t params;
 

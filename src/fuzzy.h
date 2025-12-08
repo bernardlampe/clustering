@@ -18,10 +18,9 @@ double distance(const Matrix<S>& pts, u32 i, const Vec<T>& center) {
 }
 
 template <typename S, typename T>
-void fuzzy(const Matrix<S> &pts, Vec<u8> &labels, Matrix<T> &clusters) {
+void fuzzy(const Matrix<S> &pts, const int K, Vec<u8> &labels, Matrix<T> &clusters) {
     const u32 n   = pts.rows();
     const u32 dim = pts.cols();
-    const int K   = 2;      // number of clusters (can be parameterized)
     const double m = 2.0;   // fuzziness parameter (>1)
     const double tol = 1e-4;
     const int max_iter = 100;
