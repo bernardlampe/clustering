@@ -25,13 +25,13 @@ template <typename S, typename T>
 void cluster(const Params_t &params, const Matrix<S> &pts, Vec<u8> &labels, Matrix<T> &clusters);
 
 /* algorithms implemented one per file */
-/*#include "em.h"
-#include "fuzzy.h"
+#include "kmeans.h"
+#include "dbscan.h"
+#include "em.h"
 #include "meanshift.h"
 #include "ncuts.h"
+/*#include "fuzzy.h"
 #include "spectral.h"*/
-#include "dbscan.h"
-#include "kmeans.h"
 
 // one point per row of Matrix pts, supports up to 255 clusters
 template <typename S = float, typename T = float>
@@ -58,13 +58,28 @@ void cluster(Params_t &params, const Matrix<S> &pts, Vec<u8> &labels, Matrix<T> 
     dbscan(pts, std::stof(params["radius"]), std::stoi(params["minpts"]), labels, clusters);
   }
   else if (algo == "em") {
-    //em(pts, labels, clusters);
+    if (params.find("nclusters") == params.end())
+      throw(Exception("em requires --nclusters <int>"));
+
+    em(pts, std::stoi(params["nclusters"]), labels, clusters);
   }
   else if (algo == "meanshift") {
-    //meanshift(pts, labels, clusters);
+    if (params.find("bandwidth") == params.end())
+      throw(Exception("meanshift requires --bandwidth <double>"));
+
+    if (params.find("max_iters") == params.end())
+      throw(Exception("meanshift requires --max_iters <int>"));
+
+    if (params.find("tol") == params.end())
+      throw(Exception("meanshift requires --tol <double>"));
+
+    meanshift(pts, std::stod(params["bandwidth"]), std::stoi(params["max_iters"]), std::stod(params["tol"]), labels, clusters);
   }
   else if (algo == "ncuts") {
-    //ncuts(pts, labels, clusters);
+    if (params.find("nclusters") == params.end())
+      throw(Exception("ncuts requires --nclusters <int>"));
+
+    ncuts(pts, std::stoi(params["nclusters"]), labels, clusters);
   }
   else if (algo == "spectral") {
     //spectral(pts, labels, clusters);

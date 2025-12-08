@@ -18,12 +18,9 @@ double gaussian_kernel(const Matrix<S> &pts, u32 i, const Vec<S> &center, double
 }
 
 template <typename S, typename T>
-void meanshift(const Matrix<S> &pts, Vec<u8> &labels, Matrix<T> &clusters) {
+void meanshift(const Matrix<S> &pts, const double bandwidth, const u32 max_iters, const double tol, Vec<u8> &labels, Matrix<T> &clusters) {
     const u32 n = pts.rows();
     const u32 dim = pts.cols();
-    const double bandwidth = 2.0;   // kernel radius (tunable)
-    const double tol = 1e-3;        // convergence tolerance
-    const u32 max_iter = 100;       // max iterations
 
     // Initialize shifted points as input points
     Matrix<T> shifted(n, dim);
@@ -32,7 +29,7 @@ void meanshift(const Matrix<S> &pts, Vec<u8> &labels, Matrix<T> &clusters) {
             shifted.set(i, d, pts.get(i, d));
 
     // Iteratively shift each point
-    for (u32 iter = 0; iter < max_iter; iter++) {
+    for (u32 iter = 0; iter < max_iters; iter++) {
         bool converged = true;
         for (u32 i = 0; i < n; i++) {
             Vec<T> new_center(dim);

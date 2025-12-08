@@ -63,12 +63,9 @@ void init_means_kpp(const Matrix<S>& pts, Matrix<T>& means, u32 K) {
 
 // EM for Gaussian Mixture Models (diagonal covariance)
 template <typename S, typename T>
-void em(const Matrix<S> &pts, Vec<u8> &labels, Matrix<T> &clusters) {
+void em(const Matrix<S> &pts, const u32 K, Vec<u8> &labels, Matrix<T> &clusters) {
     const u32 n = pts.rows();
     const u32 dim = pts.cols();
-
-    // Choose number of clusters (can be adjusted)
-    const u32 K = 3;
 
     // Parameters: mixing coefficients, means (clusters), diagonal variances
     Vec<double> pi(K);           // mixture weights
@@ -87,7 +84,7 @@ void em(const Matrix<S> &pts, Vec<u8> &labels, Matrix<T> &clusters) {
 
     const double eps = 1e-6;      // variance floor
     const double tol = 1e-4;      // log-likelihood tolerance
-    const u32 max_iter = 100;
+    const u32 max_iter = 1000;
 
     double prev_ll = -std::numeric_limits<double>::infinity();
 
