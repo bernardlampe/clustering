@@ -29,8 +29,8 @@ void cluster(const Params_t &params, const Matrix<S> &pts, Vec<u8> &labels, Matr
 #include "fuzzy.h"
 #include "meanshift.h"
 #include "ncuts.h"
-#include "spectral.h"
-#include "dbscan.h"*/
+#include "spectral.h"*/
+#include "dbscan.h"
 #include "kmeans.h"
 
 // one point per row of Matrix pts, supports up to 255 clusters
@@ -55,7 +55,7 @@ void cluster(Params_t &params, const Matrix<S> &pts, Vec<u8> &labels, Matrix<T> 
     if (params.find("minpts") == params.end())
       throw(Exception("dbscan requires --minpts <int>"));
 
-    //dbscan(pts, std::stof(params["radius"]), std::stoi(params["minpts"]), labels, clusters);
+    dbscan(pts, std::stof(params["radius"]), std::stoi(params["minpts"]), labels, clusters);
   }
   else if (algo == "em") {
     //em(pts, labels, clusters);

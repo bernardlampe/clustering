@@ -94,5 +94,4 @@ void dbscan(const Matrix<S> &pts, const float radius, const int minpts,
     }
 }
 
-
 #endif // __DBSCAN_H__
