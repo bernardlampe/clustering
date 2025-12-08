@@ -63,12 +63,14 @@ template <typename T> Matrix<T> &Matrix<T>::operator*=(const T &c) {
 
 template <typename T> Matrix<T> Matrix<T>::operator/(const T &c) const {
   Matrix<T> temp(_rows, _cols);
+  if (c == 0) throw Exception("division by zero");
   for (u32 i = 0; i < _rows * _cols; i++)
     temp._data[i] = _data[i] / c;
   return temp;
 }
 
 template <typename T> Matrix<T> &Matrix<T>::operator/=(const T &c) {
+  if (c == 0) throw Exception("division by zero");
   for (u32 i = 0; i < _rows * _cols; i++)
     _data[i] /= c;
   return *this;
@@ -130,9 +132,9 @@ template <typename T> Vec<T> Matrix<T>::dot(const Vec<T> &v) const {
   if (v.len() != _cols)
     throw Exception("matrix-vector are not compatible");
 
-  double s;
   Vec<T> temp(_rows);
-  for (u32 r = 0; r < _rows; r++, s = 0) {
+  for (u32 r = 0; r < _rows; r++) {
+    double s = 0.0;
     for (u32 c = 0; c < _cols; c++)
       s += v[c] * _data[r * _cols + c];
     temp[r] = (T)s;
@@ -225,7 +227,7 @@ template <typename T> Matrix<T> Matrix<T>::decompLUP(Vec<u32> &P) const {
     imax = i;
 
     for (k = i; k < _rows; k++) {
-      if ((absA = ABS(temp._data[k * _cols + i])) > maxA) {
+      if ((absA = std::fabs(temp._data[k * _cols + i])) > maxA) {
         maxA = absA;
         imax = k;
       }
@@ -271,7 +273,7 @@ template <typename T> Matrix<T> Matrix<T>::adjoint() const {
   for (u32 r = 0; r < _rows; r++) {
     for (u32 c = 0; c < _cols; c++) {
       Matrix<T> cof = cofactor(r, c);
-      sign = ((r + c) % 2) ? 1 : -1;
+      sign = ((r + c) % 2 == 0) ? 1 : -1;
       adj._data[c * _cols + r] = sign * cof.determinant_1();
     }
   }
@@ -302,10 +304,10 @@ template <typename T> Matrix<T> Matrix<T>::inverse_1() const {
     throw Exception("cannot compute inverse of non-square matrix");
 
   T det = determinant_1();
-  if (ABS(det) < tol)
+  if (std::fabs(det) < tol)
     throw Exception("determinant is zero for inverse operation");
 
-  return (adjoint() /= det) * -1;
+  return (adjoint() /= det);
 }
 
 template <typename T> Vec<T> Matrix<T>::solve_1(const Vec<T> &b) const {

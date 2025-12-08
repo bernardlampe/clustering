@@ -1,9 +1,8 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
+#include<map>
 #include<string>
-
-#include "Map.h"
 
 // signed primitive types
 typedef char s8;
@@ -21,6 +20,6 @@ typedef unsigned long long u64;
 constexpr static double tol = 1e-12;
 
 // for parsing cmdline args
-typedef Map<std::string, std::string> Params_t;
+typedef std::map<std::string, std::string> Params_t;
 
 #endif // __TYPES_H__

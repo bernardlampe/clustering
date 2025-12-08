@@ -1,6 +1,7 @@
 #ifndef __MATRIX_H__
 #define __MATRIX_H__
 
+#include<cmath>
 #include<iostream>
 #include<random>
 
@@ -87,12 +88,36 @@ public:
 
   void rand(const u32 r, const u32 c) {
     init(r, c, 0);
-    // TODO
+    std::mt19937 gen(std::random_device{}());
+    std::uniform_real_distribution<T> dist(0, 1);
+    for (u32 i = 0; i < _rows * _cols; i++)
+        _data[i] = dist(gen);
   }
 
   void randn(const u32 r, const u32 c) {
     init(r, c, 0);
-    // TODO
+    static std::mt19937 gen(std::random_device{}());
+    std::normal_distribution<T> dist(0.0, 1.0);
+    for (u32 i = 0; i < _rows * _cols; i++)
+        _data[i] = dist(gen);
+  }
+
+  void rand() {
+      if (_rows == 0 || _cols == 0) return;
+
+      std::mt19937 gen(std::random_device{}());
+      std::uniform_real_distribution<T> dist(0, 1);
+      for (u32 i = 0; i < _rows * _cols; i++)
+          _data[i] = dist(gen);
+  }
+
+  void randn() {
+      if (_rows == 0 || _cols == 0) return;
+
+      static std::mt19937 gen(std::random_device{}());
+      std::normal_distribution<T> dist(0.0, 1.0);
+      for (u32 i = 0; i < _rows * _cols; i++)
+          _data[i] = dist(gen);
   }
 
   void zero() {
@@ -103,14 +128,6 @@ public:
   void one() {
     for (u32 i = 0; i < _rows * _cols; i++)
       _data[i] = 1;
-  }
-
-  void rand() {
-    // TODO
-  }
-
-  void randn() {
-    // TODO
   }
 
   void clear() {
@@ -133,13 +150,13 @@ public:
   Vec<T> getcol(const u32 c) const;
   void setcol(const u32 c, const Vec<T> &v);
 
-  T &operator[](u32 i) { return (_data[i]); }
+  T &operator[](u32 i) const { return (_data[i]); }
 
   /* init square identity */
   Matrix<T> eye(u32 d) {
     init(d, d);
     for (u32 i = 0; i < d; i++)
-      _data[i * d + i];
+      _data[i * d + i] = 1;
   }
 
   /* Matrix scalar operations */
@@ -211,7 +228,7 @@ std::ostream &operator<<(std::ostream &os, const Matrix<T> &m) {
     for (u32 c = 0; c < m.cols(); c++) {
       os << m.get(r, c) << ", ";
     }
-    std::cout << std::endl;
+    os << std::endl;
   }
 
   return os;

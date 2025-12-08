@@ -1,5 +1,5 @@
 CC := clang++
-CCFLAGS := -g -Wall -I../src -std=c++11
+CCFLAGS := -g -Wall -I.. -std=c++11
 
 SRCS := $(wildcard *.cc)
 BINS := $(basename $(SRCS))

@@ -1,8 +1,8 @@
 #ifndef __VEC_H__
 #define __VEC_H__
 
+#include <cmath>
 #include <cstdlib>
-#include <math.h>
 #include <ostream>
 
 #include "types.h"
@@ -77,7 +77,7 @@ public:
   Vec<T> &operator=(const Vec<T> &o) {
     if (this != &o) {
       init(o._n);
-      for (u32 i = 0; i < o.n; i++)
+      for (u32 i = 0; i < o._n; i++)
         _data[i] = o._data[i];
     }
 
@@ -173,8 +173,10 @@ public:
 
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const Vec<T> &v) {
-  for (u32 i = 0; i < v.len(); i++)
-    os << v[i] << ",";
+  for (u32 i = 0; i < v.len(); i++) {
+    os << v[i];
+    if (i + 1 < v.len()) os << ", ";
+  }
   return os;
 }
 

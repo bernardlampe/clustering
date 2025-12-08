@@ -22,7 +22,7 @@ template <typename T> double Vec<T>::norm() const {
 template <typename T> Vec<T> Vec<T>::abs() const {
   Vec<T> v(_n);
   for (u32 i = 0; i < _n; i++)
-    v._data[i] = ABS(_data[i]);
+    v._data[i] = std::fabs(_data[i]);
   return v;
 }
 

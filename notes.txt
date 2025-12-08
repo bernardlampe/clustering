@@ -1,7 +1,0 @@
-implement dbscan, fuzzy cmeans, em, mean shift, spectral clustering, normalized cuts
-implement kernel algorithms
-
-add sparse matrix type for clustering and base matrix type which both inherit from
-add random function to matrix and create a cs demo using sparse matrix
-
-write report for each algorithm, regular, kernel and cs compare to https://ieeexplore.ieee.org/document/8014707

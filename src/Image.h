@@ -2,12 +2,13 @@
 #define __IMAGE_H__
 
 #include <fstream>
+#include <cstring>
 #include <string>
 
 #include "Exception.h"
+#include "drawLine.h"
 #include "Matrix.h"
 #include "Vec.h"
-#include "drawLine.h"
 #include "types.h"
 
 /* Abstraction of a 2-D image with template pixel type. */
@@ -82,15 +83,17 @@ public:
       _width = o._width;
 
       o._data = 0;
-      o._rows = o._cols = 0;
+      o._height = o._width = 0;
     }
 
     return *this;
   }
 
-  T &operator[](const u32 i) const { return (_data[i]); }
+  const T &operator[](const u32 i) const { return _data[i]; }
+  T &operator[](const u32 i) { return _data[i]; }
 
-  T &get(const u32 i) const { return (_data[i]); }
+  const T &get(const u32 i) const { return _data[i]; }
+  T &get(const u32 i) { return _data[i]; }
 
   void set(const u32 i, const T &v) { _data[i] = v; }
 

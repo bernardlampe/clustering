@@ -53,6 +53,7 @@ int main()
 
     cout << m0.dot(v0) << endl;
     cout << m3.dot(v1) << endl;
+
     cout << m4.transpose().dot(v0) << endl;
 
     cout << m0.dot(m1) << endl;
@@ -61,10 +62,12 @@ int main()
 
     cout << m5.determinant_1() << endl;
     cout << m5.inverse_1() << endl;
+    cout << m5.inverse_1().dot(v0) << endl;
     cout << m5.solve_1(v0) << endl;
 
     cout << m5.determinant_2() << endl << endl;
     cout << m5.inverse_2() << endl << endl;
+    cout << m5.inverse_2().dot(v0) << endl << endl;
     cout << m5.solve_2(v0) << endl << endl;
 
     return 0;
