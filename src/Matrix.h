@@ -220,6 +220,12 @@ public:
 
   // invert using LUP decomp
   Matrix<T> inverse_2() const;
+
+  // compute qr decomp
+  void qrDecomposition(Matrix<double> &Q, Matrix<double> &R) const;
+
+  // find eigenvalues and vectors
+  void eigenDecomposition(Vec<double> &eigenvalues, Matrix<double> &eigenvectors, int maxIter, double tol) const;
 };
 
 template <typename T>

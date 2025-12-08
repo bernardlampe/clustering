@@ -408,3 +408,89 @@ template <typename T> Vec<T> Matrix<T>::solve_2(const Vec<T> &b) const {
 
   return x;
 }
+
+#include <cmath>
+#include <vector>
+
+// Decompose A into Q and R such that A = Q * R
+template <typename T>
+void Matrix<T>::qrDecomposition(Matrix<double> &Q, Matrix<double> &R) const {
+    if (_rows < _cols)
+        throw Exception("QR decomposition requires rows >= cols");
+
+    int m = _rows;
+    int n = _cols;
+
+    Q.init(m, n);
+    R.init(n, n);
+
+    // Copy columns of A
+    std::vector<std::vector<double>> aCols(n, std::vector<double>(m));
+    for (int j = 0; j < n; j++) {
+        for (int i = 0; i < m; i++) {
+            aCols[j][i] = static_cast<double>(_data[i * _cols + j]);
+        }
+    }
+
+    std::vector<std::vector<double>> qCols(n, std::vector<double>(m));
+
+    for (int j = 0; j < n; j++) {
+        qCols[j] = aCols[j];
+
+        for (int k = 0; k < j; k++) {
+            double dot = 0.0;
+            for (int i = 0; i < m; i++) dot += aCols[j][i] * qCols[k][i];
+            for (int i = 0; i < m; i++) qCols[j][i] -= dot * qCols[k][i];
+            R.set(k, j, dot);
+        }
+
+        double norm = 0.0;
+        for (int i = 0; i < m; i++) norm += qCols[j][i] * qCols[j][i];
+        norm = std::sqrt(norm);
+
+        if (norm < 1e-12) throw Exception("Matrix has linearly dependent columns");
+
+        for (int i = 0; i < m; i++) qCols[j][i] /= norm;
+        R.set(j, j, norm);
+    }
+
+    for (int j = 0; j < n; j++) {
+        for (int i = 0; i < m; i++) {
+            Q.set(i, j, qCols[j][i]);
+        }
+    }
+}
+
+// Compute eigenvalues and eigenvectors using QR iteration
+template <typename T>
+void Matrix<T>::eigenDecomposition(Vec<double> &eigenvalues, Matrix<double> &eigenvectors, int maxIter, double tol) const {
+    if (_rows != _cols)
+        throw Exception("Eigen decomposition requires a square matrix");
+
+    int n = _rows;
+    Matrix<double> A(n, n);
+    for (int i = 0; i < n * n; i++) A._data[i] = static_cast<double>(_data[i]);
+
+    eigenvectors.init(n, n);
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            eigenvectors.set(i, j, (i == j) ? 1.0 : 0.0);
+
+    for (int iter = 0; iter < maxIter; iter++) {
+        Matrix<double> Q, R;
+        A.qrDecomposition(Q, R);
+
+        A = R.dot(Q);
+        eigenvectors = eigenvectors.dot(Q);
+
+        double offDiag = 0.0;
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                if (i != j) offDiag += std::abs(A.get(i, j));
+        if (offDiag < tol) break;
+    }
+
+    eigenvalues.init(n);
+    for (int i = 0; i < n; i++)
+        eigenvalues[i] = A.get(i, i);
+}
