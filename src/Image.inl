@@ -124,10 +124,6 @@ template <typename T> Image<T> Image<T>::operator*(const Image<T> &im) const {
   return (temp);
 }
 
-template <typename T> void Image<T>::readFromFile(const std::string &fname) {
-  throw Exception("not implemented");
-}
-
 template <> void Image<u8>::readFromFile(const std::string &fname) {
   std::ifstream ifile;
   std::string magic, cols, rows, max;

@@ -10,7 +10,6 @@
 template <typename S, typename T>
 void spectral(const Matrix<S> &pts, const u32 K, Vec<u8> &labels, Matrix<T> &clusters) {
     const u32 n = pts.rows();
-    const u32 dim = pts.cols();
 
     // Step 1: Build similarity matrix W
     Matrix<double> W(n, n);
