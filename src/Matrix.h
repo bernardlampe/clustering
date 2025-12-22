@@ -186,6 +186,8 @@ public:
   Matrix<T> &operator/=(const Matrix<T> &m);
 
   /* More advanced composition operations */
+  Matrix<T> normalize() const;
+
   Matrix<T> transpose() const;
 
   Vec<T> diag() const;

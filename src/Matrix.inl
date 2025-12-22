@@ -161,6 +161,27 @@ template <typename T> Matrix<T> Matrix<T>::dot(const Matrix<T> &m) const {
   return temp;
 }
 
+template <typename T> Matrix<T> Matrix<T>::normalize() const {
+
+  Matrix<T> temp(_rows, _cols);
+  for (u32 c = 0; c < _cols; c++) {
+    // find min and max
+    double min = std::numeric_limits<double>::infinity();
+    double max = -std::numeric_limits<double>::infinity();
+
+    for (u32 r = 0; r < _rows; r++) {
+      if (_data[r * _cols + c] < min) min = _data[r * _cols + c];
+      if (_data[r * _cols + c] > max) max = _data[r * _cols + c];
+    }
+
+    // normalize column entries between zero and one
+    for (u32 r = 0; r < _rows; r++) {
+      temp._data[r * _cols + c] = (_data[r * _cols + c] - min) / (max - min);
+    }
+  }
+  return temp;
+}
+
 template <typename T> Matrix<T> Matrix<T>::transpose() const {
   Matrix<T> temp(_cols, _rows);
   for (u32 r = 0; r < _rows; r++) {
