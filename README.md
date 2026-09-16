@@ -37,11 +37,15 @@ is smaller than the blobs' internal point spacing (~0.0040 for cluster5,
   image is the algorithm's correct answer for that data. cluster4 chains at
   radius 0.08 too; its table image uses a tuned `--radius 0.0202` which
   recovers the 3 ground-truth blobs.
-- **meanshift** on cluster4 merges the two upper blobs at bandwidth 0.1 and
-  over-fragments at any smaller bandwidth (4+ modes at bw≤0.08), so no
-  parameter set yields 3 clean blobs; its 2-cluster image is genuine output.
-  Global-structure methods (spectral, ncuts) and parametric methods (kmeans,
-  em, fuzzy) are unaffected.
+- **meanshift** is mode-unstable on this collection: cluster4 merges the two
+  upper blobs at bandwidth 0.1 (smaller bandwidths over-fragment to 4+ modes),
+  so no parameter set yields 3 clean blobs — its 2-cluster image is genuine
+  output at the listed bandwidth. Other datasets also deviate from their
+  kmeans/spectral cluster counts (cluster2 → 13, cluster6 → 8, cluster5 → 20,
+  cluster1 → 5 modes at bw=0.1): the datasets are elongated streaks, not
+  gaussian lumps, and the mode count of a gaussian-kernel meanshift on them
+  is sensitive to the bandwidth. Global-structure methods (spectral, ncuts) and
+  parametric methods (kmeans, em, fuzzy) produce the expected counts.
 
 `<K>` per dataset: cluster0=3, cluster1=7, cluster2=2, cluster3=2, cluster4=3, cluster5=3, cluster6=2.
 
