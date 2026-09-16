@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clustering Results</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; margin: 2rem; }
+  h1 { font-size: 1.4rem; }
+  table { border-collapse: collapse; }
+  td, th { border: 1px solid #8884; padding: 6px; text-align: center; vertical-align: middle; }
+  th { background: #8881; }
+  img { max-width: 160px; height: auto; display: block; }
+  caption { caption-side: bottom; padding-top: 10px; font-size: 0.85rem; text-align: left; }
+  code { font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<h1>Clustering Results — 7 algorithms × 7 datasets</h1>
+
+<table>
+  <caption>
+    Parameters used: kmeans/em/fuzzy/spectral/ncuts &nbsp;<code>--nclusters &lt;K&gt;</code> —
+    dbscan &nbsp;<code>--radius 0.08 --minpts 5</code> (cluster4: <code>--radius 0.0202 --minpts 5</code>) —
+    meanshift &nbsp;<code>--bandwidth 0.1 --max_iters 30 --tol 0.01</code>.
+    &lt;K&gt; per dataset: cluster0=3, cluster1=7, cluster2=2, cluster3=2, cluster4=3, cluster5=3, cluster6=2.
+    <br>Note: clusters 4 and 5 have blobs touching via bridge-point chains
+    (spacing ~0.0018) closer than the blobs' internal point spacing, defeating
+    density-based methods: dbscan on cluster5 shows one cluster at any parameters
+    (its correct answer); cluster4's dbscan image uses a tuned radius 0.0202;
+    meanshift is mode-unstable on these elongated datasets: on cluster4 it merges
+    the two upper blobs at bandwidth 0.1 (over-fragments below 0.08) — its 2-cluster
+    image is genuine output; cluster2/5/6 similarly over-fragment at bw=0.1.
+    <br>Reproduce: <code>./src/cluster --i data/cluster0.pts --algo kmeans --nclusters 3 --o out_tmp/kmeans_0.ppm</code>
+  </caption>
+  <thead>
+    <tr>
+      <th>Dataset</th><th>kmeans</th><th>dbscan</th><th>em</th><th>fuzzy</th><th>meanshift</th><th>spectral</th><th>ncuts</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><th>cluster0</th><td><a href="images/kmeans_0.png"><img src="images/kmeans_0.png" alt="cluster0 kmeans"></a></td><td><a href="images/dbscan_0.png"><img src="images/dbscan_0.png" alt="cluster0 dbscan"></a></td><td><a href="images/em_0.png"><img src="images/em_0.png" alt="cluster0 em"></a></td><td><a href="images/fuzzy_0.png"><img src="images/fuzzy_0.png" alt="cluster0 fuzzy"></a></td><td><a href="images/meanshift_0.png"><img src="images/meanshift_0.png" alt="cluster0 meanshift"></a></td><td><a href="images/spectral_0.png"><img src="images/spectral_0.png" alt="cluster0 spectral"></a></td><td><a href="images/ncuts_0.png"><img src="images/ncuts_0.png" alt="cluster0 ncuts"></a></td></tr>
+    <tr><th>cluster1</th><td><a href="images/kmeans_1.png"><img src="images/kmeans_1.png" alt="cluster1 kmeans"></a></td><td><a href="images/dbscan_1.png"><img src="images/dbscan_1.png" alt="cluster1 dbscan"></a></td><td><a href="images/em_1.png"><img src="images/em_1.png" alt="cluster1 em"></a></td><td><a href="images/fuzzy_1.png"><img src="images/fuzzy_1.png" alt="cluster1 fuzzy"></a></td><td><a href="images/meanshift_1.png"><img src="images/meanshift_1.png" alt="cluster1 meanshift"></a></td><td><a href="images/spectral_1.png"><img src="images/spectral_1.png" alt="cluster1 spectral"></a></td><td><a href="images/ncuts_1.png"><img src="images/ncuts_1.png" alt="cluster1 ncuts"></a></td></tr>
+    <tr><th>cluster2</th><td><a href="images/kmeans_2.png"><img src="images/kmeans_2.png" alt="cluster2 kmeans"></a></td><td><a href="images/dbscan_2.png"><img src="images/dbscan_2.png" alt="cluster2 dbscan"></a></td><td><a href="images/em_2.png"><img src="images/em_2.png" alt="cluster2 em"></a></td><td><a href="images/fuzzy_2.png"><img src="images/fuzzy_2.png" alt="cluster2 fuzzy"></a></td><td><a href="images/meanshift_2.png"><img src="images/meanshift_2.png" alt="cluster2 meanshift"></a></td><td><a href="images/spectral_2.png"><img src="images/spectral_2.png" alt="cluster2 spectral"></a></td><td><a href="images/ncuts_2.png"><img src="images/ncuts_2.png" alt="cluster2 ncuts"></a></td></tr>
+    <tr><th>cluster3</th><td><a href="images/kmeans_3.png"><img src="images/kmeans_3.png" alt="cluster3 kmeans"></a></td><td><a href="images/dbscan_3.png"><img src="images/dbscan_3.png" alt="cluster3 dbscan"></a></td><td><a href="images/em_3.png"><img src="images/em_3.png" alt="cluster3 em"></a></td><td><a href="images/fuzzy_3.png"><img src="images/fuzzy_3.png" alt="cluster3 fuzzy"></a></td><td><a href="images/meanshift_3.png"><img src="images/meanshift_3.png" alt="cluster3 meanshift"></a></td><td><a href="images/spectral_3.png"><img src="images/spectral_3.png" alt="cluster3 spectral"></a></td><td><a href="images/ncuts_3.png"><img src="images/ncuts_3.png" alt="cluster3 ncuts"></a></td></tr>
+    <tr><th>cluster4</th><td><a href="images/kmeans_4.png"><img src="images/kmeans_4.png" alt="cluster4 kmeans"></a></td><td><a href="images/dbscan_4.png"><img src="images/dbscan_4.png" alt="cluster4 dbscan"></a></td><td><a href="images/em_4.png"><img src="images/em_4.png" alt="cluster4 em"></a></td><td><a href="images/fuzzy_4.png"><img src="images/fuzzy_4.png" alt="cluster4 fuzzy"></a></td><td><a href="images/meanshift_4.png"><img src="images/meanshift_4.png" alt="cluster4 meanshift"></a></td><td><a href="images/spectral_4.png"><img src="images/spectral_4.png" alt="cluster4 spectral"></a></td><td><a href="images/ncuts_4.png"><img src="images/ncuts_4.png" alt="cluster4 ncuts"></a></td></tr>
+    <tr><th>cluster5</th><td><a href="images/kmeans_5.png"><img src="images/kmeans_5.png" alt="cluster5 kmeans"></a></td><td><a href="images/dbscan_5.png"><img src="images/dbscan_5.png" alt="cluster5 dbscan"></a></td><td><a href="images/em_5.png"><img src="images/em_5.png" alt="cluster5 em"></a></td><td><a href="images/fuzzy_5.png"><img src="images/fuzzy_5.png" alt="cluster5 fuzzy"></a></td><td><a href="images/meanshift_5.png"><img src="images/meanshift_5.png" alt="cluster5 meanshift"></a></td><td><a href="images/spectral_5.png"><img src="images/spectral_5.png" alt="cluster5 spectral"></a></td><td><a href="images/ncuts_5.png"><img src="images/ncuts_5.png" alt="cluster5 ncuts"></a></td></tr>
+    <tr><th>cluster6</th><td><a href="images/kmeans_6.png"><img src="images/kmeans_6.png" alt="cluster6 kmeans"></a></td><td><a href="images/dbscan_6.png"><img src="images/dbscan_6.png" alt="cluster6 dbscan"></a></td><td><a href="images/em_6.png"><img src="images/em_6.png" alt="cluster6 em"></a></td><td><a href="images/fuzzy_6.png"><img src="images/fuzzy_6.png" alt="cluster6 fuzzy"></a></td><td><a href="images/meanshift_6.png"><img src="images/meanshift_6.png" alt="cluster6 meanshift"></a></td><td><a href="images/spectral_6.png"><img src="images/spectral_6.png" alt="cluster6 spectral"></a></td><td><a href="images/ncuts_6.png"><img src="images/ncuts_6.png" alt="cluster6 ncuts"></a></td></tr>
+  </tbody>
+</table>
+</body>
+</html>
