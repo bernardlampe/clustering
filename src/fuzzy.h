@@ -44,10 +44,14 @@ void fuzzy(const Matrix<S> &pts, const int K, Vec<u8> &labels, Matrix<T> &cluste
         }
     }
 
+    Vec<double> prev_centers(K * dim);
     clusters.init(K, dim, 0);
 
     for (int iter = 0; iter < max_iter; ++iter) {
         // Step 1: update cluster centers
+        for (int k = 0; k < K; ++k)
+            for (u32 d = 0; d < dim; ++d)
+                prev_centers[k * dim + d] = clusters.get(k, d);
         for (int k = 0; k < K; ++k) {
             for (u32 d = 0; d < dim; ++d) {
                 double num = 0.0, den = 0.0;
@@ -70,7 +74,8 @@ void fuzzy(const Matrix<S> &pts, const int K, Vec<u8> &labels, Matrix<T> &cluste
                 }
                 dist_ik = std::sqrt(dist_ik);
                 if (dist_ik < 1e-6) {
-                    U.set(i, k, 1.0);
+                    // point coincides with this center: give it full membership
+                    for (int kk = 0; kk < K; ++kk) U.set(i, kk, (kk == k) ? 1.0 : 0.0);
                     continue;
                 }
                 double denom = 0.0;
@@ -87,15 +92,15 @@ void fuzzy(const Matrix<S> &pts, const int K, Vec<u8> &labels, Matrix<T> &cluste
             }
         }
 
-        // Convergence check (change in centers)
+        // Convergence check: max center movement this iteration
         double max_change = 0.0;
         for (int k = 0; k < K; ++k) {
             for (u32 d = 0; d < dim; ++d) {
-                double diff = clusters.get(k, d); // already updated
-                max_change = std::max(max_change, std::abs(diff));
+                double diff = std::abs(clusters.get(k, d) - prev_centers[k * dim + d]);
+                max_change = std::max(max_change, diff);
             }
         }
-        if (max_change < tol) break;
+        if (iter > 0 && max_change < tol) break;
     }
 
     // Assign hard labels based on max membership

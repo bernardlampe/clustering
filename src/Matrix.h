@@ -157,6 +157,7 @@ public:
     init(d, d);
     for (u32 i = 0; i < d; i++)
       _data[i * d + i] = 1;
+    return *this;
   }
 
   /* Matrix scalar operations */

@@ -40,25 +40,44 @@ void spectral(const Matrix<S> &pts, const u32 K, Vec<u8> &labels, Matrix<T> &clu
         }
     }
 
-    // Step 4: Approximate eigenvector (power iteration)
+    // Step 4: Fiedler vector via shifted power iteration.
+    // Plain power iteration on L converges to the LARGEST eigenvalue's
+    // eigenvector, which is useless for the embedding; we need the smallest
+    // non-trivial one. Iterate on (2I - L) so that eigenvalue lambda -> 2 -
+    // lambda: the smallest lambda becomes the largest 2-lambda. After each
+    // multiply, deflate the constant vector (the trivial eigenpair of L),
+    // otherwise the iteration converges back to it.
     Vec<double> v(n);
-    v.one(); // initial vector
-    for (int iter = 0; iter < 100; ++iter) {
+    // deterministic random-ish start, orthogonal to the all-ones vector
+    double s = 0.0;
+    for (u32 i = 0; i < n; ++i) { v[i] = (i % 2 == 0) ? 1.0 : -1.0; s += v[i]; }
+    s /= n;
+    for (u32 i = 0; i < n; ++i) v[i] -= s; // start orthogonal to ones
+
+    for (int iter = 0; iter < 300; ++iter) {
         Vec<double> v_new(n);
+        v_new.zero();
         for (u32 i = 0; i < n; ++i) {
             double sum = 0.0;
             for (u32 j = 0; j < n; ++j)
                 sum += L.get(i, j) * v[j];
-            v_new[i] = sum;
+            v_new[i] = 2.0 * v[i] - sum;
         }
+        // deflate trivial eigenvector (all-ones) component
+        double mean = 0.0;
+        for (u32 i = 0; i < n; ++i) mean += v_new[i];
+        mean /= n;
+        for (u32 i = 0; i < n; ++i) v_new[i] -= mean;
+
         // normalize
         double norm = 0.0;
         for (u32 i = 0; i < n; ++i) norm += v_new[i] * v_new[i];
         norm = std::sqrt(norm);
+        if (norm < 1e-12) break;
         for (u32 i = 0; i < n; ++i) v[i] = v_new[i] / norm;
     }
 
-    // Step 5: Use eigenvector as embedding
+    // Step 5: Use Fiedler vector as embedding
     Matrix<T> embed(n, 1);
     for (u32 i = 0; i < n; ++i) embed.set(i, 0, static_cast<T>(v[i]));
 

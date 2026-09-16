@@ -1,5 +1,5 @@
 CC := g++
-CFLAGS := -g -Wall -Wextra -Wpedantic -std=c++11
+CFLAGS := -g -O2 -Wall -Wextra -Wpedantic -std=c++11
 
 BIN := cluster
 SRCS := main.cc

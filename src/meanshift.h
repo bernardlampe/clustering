@@ -43,6 +43,11 @@ void meanshift(const Matrix<S> &pts, const double bandwidth, const u32 max_iters
                     new_center[d] += w * pts.get(j, d);
             }
 
+            if (weight_sum <= 0.0) {
+                // all kernel weights underflowed: leave this point where it is
+                // rather than divide by zero and poison the center with NaN
+                continue;
+            }
             for (u32 d = 0; d < dim; d++)
                 new_center[d] /= weight_sum;
 

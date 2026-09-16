@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ostream>
 
+#include "Exception.h"
 #include "types.h"
 
 /* Abstraction of a 2-D vector float */

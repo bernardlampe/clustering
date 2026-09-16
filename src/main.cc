@@ -1,4 +1,5 @@
 #include<fstream>
+#include<cstring>
 
 using namespace std;
 
@@ -20,8 +21,15 @@ int main(int argc, char **argv)
   string ifname, ofname, ext;
   u32 rows, cols;
 
-  // process the cmdline arguments
+  // process the cmdline arguments; -h/--h is a valueless flag that exits
   params = parse_args(argc, argv);
+
+  // no parameters at all: show usage instead of a bare --i error
+  if (argc <= 1)
+    usage(EXIT_SUCCESS);
+
+  if (params.find("h") != params.end())
+    usage(EXIT_SUCCESS);
 
   // get input and output fname and ext
   if (params.find("i") == params.end())

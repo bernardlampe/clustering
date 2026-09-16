@@ -7,6 +7,7 @@
 #include"Matrix.h"
 #include"Vec.h"
 #include"types.h"
+#include"utils.h"
 
 /*
     - Clustering interface supporting multiple algorithms and up to 255 clusters.
@@ -39,7 +40,8 @@ void cluster(Params_t &params, const Matrix<S> &pts, Vec<u8> &labels, Matrix<T> 
   Matrix<S> npts = pts.normalize();
 
   // outer switch for algorithm type
-  std::string algo = params["c"];
+  // read algorithm from CLI (--algo); fall back to legacy --c spelling
+  std::string algo = params.find("algo") != params.end() ? params["algo"] : params["c"];
   if (algo == "kmeans") {
 
     // check params for kmeans algo

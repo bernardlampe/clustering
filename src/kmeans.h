@@ -41,6 +41,14 @@ void kmeans(const Matrix<S> &pts, const u32 nclusters, Vec<u8> &labels, Matrix<T
             }
         }
 
+        if (count == 0) {
+            // empty cluster: re-seed it with a random point instead of
+            // dividing by zero, which poisons the centers with NaN
+            u32 seed = rand() % npts;
+            clusters.setrow(i, pts.getrow(seed));
+            continue;
+        }
+
         // put mean in cluster matrix
         mean /= (double)count;
         clusters.setrow(i, mean);

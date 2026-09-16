@@ -50,6 +50,13 @@ void dbscan(const Matrix<S> &pts, const float radius, const int minpts,
             continue;
         }
 
+        // stop starting new clusters at 253: labels 254/255 are reserved
+        // markers, wrapping into them would corrupt the label space
+        if (cluster_id > 253) {
+            labels[i] = NOISE;
+            continue;
+        }
+
         // Start new cluster
         labels[i] = static_cast<u8>(cluster_id);
 
@@ -71,7 +78,8 @@ void dbscan(const Matrix<S> &pts, const float radius, const int minpts,
         cluster_id++;
     }
 
-    // Compute cluster centers (mean of points in each cluster)
+    // Compute cluster centers (mean of cluster members, noise and
+    // unclustered points excluded)
     clusters.init(cluster_id, dim, 0);
     std::vector<int> counts(cluster_id, 0);
 

@@ -95,6 +95,9 @@ public:
   const T &get(const u32 i) const { return _data[i]; }
   T &get(const u32 i) { return _data[i]; }
 
+  const T &get(const u32 r, const u32 c) const { return _data[r * _width + c]; }
+  T &get(const u32 r, const u32 c) { return _data[r * _width + c]; }
+
   void set(const u32 i, const T &v) { _data[i] = v; }
 
   void set(const u32 r, const u32 c, const T &v) { _data[r * _width + c] = v; }

@@ -1,32 +1,30 @@
 template <typename T> void Image<T>::convolve(const float *k, const u32 ksize) {
-  Image<float> temp(_width, _height);
   s32 center = ksize >> 1;
+  Image<float> temp(_width, _height);
 
-  // convolve with 1-D kernel in the x direction
-  for (s32 h = 0; h < _height; h++) {
-    for (s32 w = 0; w < _width; w++) {
+  // horizontal pass (rows of this)
+  for (u32 h = 0; h < _height; h++) {
+    for (u32 w = 0; w < _width; w++) {
       float d = 0.0;
       for (s32 c = -center; c <= center; c++) {
         s32 wp = w + c;
-        if (wp >= 0 && wp < _width)
+        if (wp >= 0 && wp < (s32)_width)
           d += _data[h * _width + wp] * k[center + c];
       }
-
-      temp._data[w * _height + h] = (T)d; // temp is flipped
+      temp.set(w, h, d); // temp is transposed
     }
   }
 
-  // convolve with 1-D kernel in the y direction
-  for (s32 h = 0; h < (s32)temp._height; h++) {
-    for (s32 w = 0; w < (s32)temp._width; w++) {
+  // vertical pass over the first pass output, stored in temp at (w, h)
+  for (u32 h = 0; h < _height; h++) {
+    for (u32 w = 0; w < _width; w++) {
       float d = 0.0;
       for (s32 c = -center; c <= center; c++) {
-        s32 wp = w + c;
-        if (wp >= 0 && wp < (s32)temp._width)
-          d += temp._data[h * temp._width + wp] * k[center + c];
+        s32 hp = h + c;
+      if (hp >= 0 && hp < (s32)_height)
+          d += temp.get(w, hp) * k[center + c];
       }
-
-      _data[w * temp._height + h] = (T)d; // destination if flipped
+      _data[h * _width + w] = (T)d; // destination back into this
     }
   }
 }
@@ -139,12 +137,14 @@ template <> void Image<u8>::readFromFile(const std::string &fname) {
     throw Exception("image needs to be P5 pgm");
 
   init(atoi(rows.c_str()), atoi(cols.c_str()));
+  // after the numeric header the single whitespace byte (the newline) is
+  // still in the stream -- consume it, otherwise it becomes pixel [0]
+  ifile.get();
   for (u32 i = 0; i < _width * _height; i++) {
     ifile.read((s8 *)&p, sizeof(u8));
 
     _data[i] = p;
   }
-
   ifile.close();
 }
 
@@ -161,8 +161,9 @@ template <> void Image<RGB_t>::readFromFile(const std::string &fname) {
   ifile >> magic >> cols >> rows >> max;
   if (magic != "P6")
     throw Exception("image needs to be a P6 ppm");
-
   init(atoi(rows.c_str()), atoi(cols.c_str()));
+  // consume the header's trailing newline before raw raster data
+  ifile.get();
   for (u32 i = 0; i < _width * _height; i++) {
     ifile.read((s8 *)&r, sizeof(u8));
     ifile.read((s8 *)&g, sizeof(u8));
@@ -176,14 +177,37 @@ template <> void Image<RGB_t>::readFromFile(const std::string &fname) {
   ifile.close();
 }
 
-template <typename T>
-void Image<T>::writeToFile(const std::string &fname) const {
-  T minVal, maxVal;
-  float scaleVal;
+/* u8 pixel data must round-trip verbatim for PGM files; the generic writer
+ * below contrast-stretches to [0,255] which is right for float signal data
+ * but would mutate real 8-bit image values. */
+template <> void Image<u8>::writeToFile(const std::string &fname) const {
   std::ofstream ofile;
   u32 numElems = _height * _width;
 
-  if (numElems <= 0) {
+  if (numElems == 0)
+    throw(Exception("cannot write a null image object to file"));
+
+  ofile.open(fname.c_str());
+  if (!ofile) {
+    throw(Exception("could not open image file for writing"));
+  }
+
+  ofile << "P5\n" << _width << " " << _height << "\n255\n";
+  for (u32 i = 0; i < numElems; i++) {
+    u8 val = (u8)_data[i];
+    ofile.write((s8 *)&val, sizeof(u8));
+  }
+  ofile.close();
+}
+
+template <typename T>
+void Image<T>::writeToFile(const std::string &fname) const {
+  float scaleVal;
+  T minVal, maxVal;
+  u32 numElems = _height * _width;
+  std::ofstream ofile;
+
+  if (numElems == 0) {
     throw(Exception("cannot write a null image object to file"));
   }
 

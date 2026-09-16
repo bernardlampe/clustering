@@ -77,53 +77,69 @@ template <typename T> Matrix<T> &Matrix<T>::operator/=(const T &c) {
 }
 
 template <typename T> Matrix<T> Matrix<T>::operator+(const Matrix<T> &m) const {
-  Matrix<T> temp(m._rows, m._cols);
-  for (u32 i = 0; i < m._rows * m._cols; i++)
+  if (_rows != m._rows || _cols != m._cols)
+    throw Exception("matrix dimensions are not compatible");
+  Matrix<T> temp(_rows, _cols);
+  for (u32 i = 0; i < _rows * _cols; i++)
     temp._data[i] = _data[i] + m._data[i];
   return temp;
 }
 
 template <typename T> Matrix<T> &Matrix<T>::operator+=(const Matrix<T> &m) {
-  for (u32 i = 0; i < m._rows * m._cols; i++)
+  if (_rows != m._rows || _cols != m._cols)
+    throw Exception("matrix dimensions are not compatible");
+  for (u32 i = 0; i < _rows * _cols; i++)
     _data[i] += m._data[i];
   return *this;
 }
 
 template <typename T> Matrix<T> Matrix<T>::operator-(const Matrix<T> &m) const {
-  Matrix<T> temp(m._rows, m._cols);
-  for (u32 i = 0; i < m._rows * m._cols; i++)
+  if (_rows != m._rows || _cols != m._cols)
+    throw Exception("matrix dimensions are not compatible");
+  Matrix<T> temp(_rows, _cols);
+  for (u32 i = 0; i < _rows * _cols; i++)
     temp._data[i] = _data[i] - m._data[i];
   return temp;
 }
 
 template <typename T> Matrix<T> &Matrix<T>::operator-=(const Matrix<T> &m) {
-  for (u32 i = 0; i < m._rows * m._cols; i++)
+  if (_rows != m._rows || _cols != m._cols)
+    throw Exception("matrix dimensions are not compatible");
+  for (u32 i = 0; i < _rows * _cols; i++)
     _data[i] -= m._data[i];
   return *this;
 }
 
 template <typename T> Matrix<T> Matrix<T>::operator*(const Matrix<T> &m) const {
-  Matrix<T> temp(m._rows, m._cols);
-  for (u32 i = 0; i < m._rows * m._cols; i++)
+  if (_rows != m._rows || _cols != m._cols)
+    throw Exception("matrix dimensions are not compatible");
+  Matrix<T> temp(_rows, _cols);
+  for (u32 i = 0; i < _rows * _cols; i++)
     temp._data[i] = _data[i] * m._data[i];
   return temp;
 }
 
 template <typename T> Matrix<T> &Matrix<T>::operator*=(const Matrix<T> &m) {
-  for (u32 i = 0; i < m._rows * m._cols; i++)
+  if (_rows != m._rows || _cols != m._cols)
+    throw Exception("matrix dimensions are not compatible");
+  for (u32 i = 0; i < _rows * _cols; i++)
     _data[i] *= m._data[i];
   return *this;
 }
 
 template <typename T> Matrix<T> Matrix<T>::operator/(const Matrix<T> &m) const {
-  Matrix<T> temp(m._rows, m._cols);
-  for (u32 i = 0; i < m._rows * m._cols; i++)
+  if (_rows != m._rows || _cols != m._cols)
+    throw Exception("matrix dimensions are not compatible");
+  Matrix<T> temp(_rows, _cols);
+  for (u32 i = 0; i < _rows * _cols; i++)
     temp._data[i] = _data[i] / m._data[i];
   return temp;
 }
 
 template <typename T> Matrix<T> &Matrix<T>::operator/=(const Matrix<T> &m) {
-  for (u32 i = 0; i < m._rows * m._cols; i++)
+  if (_rows != m._rows || _cols != m._cols)
+    throw Exception("matrix dimensions are not compatible");
+  for (u32 i = 0; i < _rows * _cols; i++)
     _data[i] /= m._data[i];
   return *this;
 }
@@ -174,9 +190,10 @@ template <typename T> Matrix<T> Matrix<T>::normalize() const {
       if (_data[r * _cols + c] > max) max = _data[r * _cols + c];
     }
 
-    // normalize column entries between zero and one
+    // normalize column entries between zero and one; constant columns
+    // (max == min) map to zero instead of dividing by zero
     for (u32 r = 0; r < _rows; r++) {
-      temp._data[r * _cols + c] = (_data[r * _cols + c] - min) / (max - min);
+      temp._data[r * _cols + c] = (max > min) ? (_data[r * _cols + c] - min) / (max - min) : 0;
     }
   }
   return temp;
@@ -490,7 +507,9 @@ void Matrix<T>::eigenDecomposition(Vec<double> &eigenvalues, Matrix<double> &eig
 
     int n = _rows;
     Matrix<double> A(n, n);
-    for (int i = 0; i < n * n; i++) A._data[i] = static_cast<double>(_data[i]);
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            A.set(i, j, static_cast<double>(get(i, j)));
 
     eigenvectors.init(n, n);
     for (int i = 0; i < n; i++)
