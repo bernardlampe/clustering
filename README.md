@@ -28,27 +28,6 @@ A C++ implementation of unsupervised clustering algorithms applied to image segm
 | spectral | `--nclusters <K>` |
 | ncuts | `--nclusters <K>` |
 
-¹ cluster4 and cluster5 have blob geometry that defeats density-based
-separation: their blobs touch via bridge-point chains whose spacing (~0.0018)
-is smaller than the blobs' internal point spacing (~0.0040 for cluster5,
-~0.0027 for cluster4). Consequences:
-
-- **dbscan** on cluster5 yields one cluster at any `(radius, minpts)` — that
-  image is the algorithm's correct answer for that data. cluster4 chains at
-  radius 0.08 too; its table image uses a tuned `--radius 0.0202` which
-  recovers the 3 ground-truth blobs.
-- **meanshift** is mode-unstable on this collection: cluster4 merges the two
-  upper blobs at bandwidth 0.1 (smaller bandwidths over-fragment to 4+ modes),
-  so no parameter set yields 3 clean blobs — its 2-cluster image is genuine
-  output at the listed bandwidth. Other datasets also deviate from their
-  kmeans/spectral cluster counts (cluster2 → 13, cluster6 → 8, cluster5 → 20,
-  cluster1 → 5 modes at bw=0.1): the datasets are elongated streaks, not
-  gaussian lumps, and the mode count of a gaussian-kernel meanshift on them
-  is sensitive to the bandwidth. Global-structure methods (spectral, ncuts) and
-  parametric methods (kmeans, em, fuzzy) produce the expected counts.
-
-`<K>` per dataset: cluster0=3, cluster1=7, cluster2=2, cluster3=2, cluster4=3, cluster5=3, cluster6=2.
-
 Reproduce one image with:
 
     ./src/cluster --i data/cluster0.pts --algo kmeans --nclusters 3 --o out_tmp/kmeans_0.ppm && \
